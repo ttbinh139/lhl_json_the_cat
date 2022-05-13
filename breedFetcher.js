@@ -1,24 +1,24 @@
 const request = require('request');
 
-const args = process.argv.slice(2);
-
-let url = `https://api.thecatapi.com/v1/breeds/search?q=${args[0]}`;
-
-const breedFetcher = function () {
+const fetchBreedDescription = function(breedName, callback) {
+  let url = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
   request(url, (error, response, body) => {
     if (error) {
-      throw ('Something went wrong');
+      callback(error, null);
     }
     if (response && response.statusCode !== 200) {
-      throw ('Something went wrong, statusCode: ', response.statusCode);
+      callback(response.statusCode, null);
+      //throw ('Something went wrong, statusCode: ', response.statusCode);
     }
     let data = JSON.parse(body);
-    if (data[0] != undefined) {
-      console.log("Data", data[0]);
+    //console.log(data);
+    if (data[0] == undefined) {
+      callback(null, []);
     } else {
-      console.log("Breed not found!");
+      // console.log(data[0].description);
+      callback(null, data[0].description);
     }
   });
 };
 
-breedFetcher();
+module.exports = {fetchBreedDescription};
